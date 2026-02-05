@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
+import { use } from "react";
 
 interface ImageData {
   id: string;
@@ -12,35 +13,59 @@ interface ImageData {
   links: { html: string };
 }
 
-export default function Home() {
+export default function Page({ params }: { params: Promise<{ pageno: string }> }) {
+  const resolvedParams = use(params);
+  const keyword = resolvedParams.pageno.replace(/-/g, " ");
+
   const [images, setImages] = useState<ImageData[]>([]);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // Modal state
   const [preview, setPreview] = useState<ImageData | null>(null);
-  const defaultQuery = "nature";
+
+  const fetchImages = async (currentPage: number) => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch(
+        `/api/unsplash-search?query=${encodeURIComponent(
+          keyword
+        )}&page=${currentPage}&per_page=12`
+      );
+      const data = await res.json();
+
+      if (data.results && data.results.length > 0) {
+        setImages((prev) => [...prev, ...data.results]);
+      } else if (currentPage === 1) {
+        setError(`No images found for "${keyword}"`);
+      }
+    } catch {
+      setError("Failed to fetch images");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchImages = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(
-          `/api/unsplash-search?query=${encodeURIComponent(defaultQuery)}&page=1&per_page=12`
-        );
-        const data: { results?: ImageData[] } = await res.json();
-        setImages(data.results || []);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    };
+    setImages([]);
+    setPage(1);
+    fetchImages(1);
+  }, [keyword]);
 
-    fetchImages();
-  }, []);
+  const handleLoadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchImages(nextPage);
+  };
 
   return (
     <div style={{ padding: "1rem", maxWidth: "1200px", margin: "0 auto" }}>
-      <h1 style={{ textAlign: "center" }}>Featured: {defaultQuery}</h1>
+      <h1 style={{ textAlign: "center" }}>Results for: {keyword}</h1>
+      {error && <p style={{ textAlign: "center", color: "red" }}>{error}</p>}
 
+      {/* Grid of images */}
       <div
         style={{
           display: "grid",
@@ -89,6 +114,24 @@ export default function Home() {
 
       {loading && <p style={{ textAlign: "center", marginTop: "1rem" }}>Loading...</p>}
 
+      {!loading && images.length > 0 && (
+        <div style={{ textAlign: "center", marginTop: "2rem" }}>
+          <button
+            onClick={handleLoadMore}
+            style={{
+              padding: "0.5rem 1rem",
+              cursor: "pointer",
+              backgroundColor: "#0070f3",
+              color: "white",
+              border: "none",
+              borderRadius: "5px",
+            }}
+          >
+            Load More
+          </button>
+        </div>
+      )}
+
       {/* Modal Preview */}
       {preview && (
         <div
@@ -109,7 +152,7 @@ export default function Home() {
           }}
         >
           <div
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()} // prevent modal close when clicking content
             style={{ maxWidth: "90%", maxHeight: "90%", textAlign: "center" }}
           >
             <Image
