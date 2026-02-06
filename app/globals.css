@@ -1,25 +1,39 @@
 @import "tailwindcss";
 
-/* Dark-first design tokens */
+/* ==============================
+   🌙 Design Tokens (Dark First)
+============================== */
 :root {
-  --bg: #06070a; /* deeper dark background */
+  /* Layout & Color System */
+  --bg: #06070a;
   --surface: #07090f;
   --card: #0b0f14;
-  --muted: #9aa6b2; /* secondary text */
-  --text: #ffffff; /* strong white text in dark mode */
+  --muted: #9aa6b2;
+  --text: #ffffff;
   --accent: #60a5fa;
-  --border: rgba(255,255,255,0.04);
-  --glass: rgba(255,255,255,0.03);
+
+  /* Effects & Depth */
+  --border: rgba(255,255,255,0.06);
+  --glass: rgba(255,255,255,0.04);
   --header-bg: rgba(255,255,255,0.02);
   --radius: 12px;
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.25);
+
+  /* Animation & Motion */
   --transition-fast: 180ms;
+  --transition-med: 280ms;
+  --transition-slow: 400ms;
 }
 
-/* Light mode override */
+/* ==============================
+   ☀️ Light Mode (System Preference)
+============================== */
 @media (prefers-color-scheme: light) {
-  :root {
+  :root:not([data-theme="dark"]) {
     --bg: #ffffff;
-    --surface: #f8fafc;
+    --surface: #f9fafb;
     --card: #ffffff;
     --muted: #6b7280;
     --text: #0f172a;
@@ -27,50 +41,72 @@
     --border: rgba(15,23,42,0.08);
     --glass: rgba(15,23,42,0.02);
     --header-bg: rgba(15,23,42,0.03);
+    --shadow-lg: 0 12px 40px rgba(15,23,42,0.14);
+    --shadow-md: 0 6px 18px rgba(15,23,42,0.1);
+    --shadow-sm: 0 2px 8px rgba(15,23,42,0.06);
   }
 }
 
+/* ==============================
+   ☀️ Light Mode (Manual Toggle)
+============================== */
 :root[data-theme="light"] {
+  color-scheme: light;
   --bg: #ffffff;
-  --surface: #f8fafc;
+  --surface: #f9fafb;
   --card: #ffffff;
   --muted: #6b7280;
   --text: #0f172a;
   --accent: #2563eb;
   --border: rgba(15,23,42,0.08);
   --glass: rgba(15,23,42,0.02);
+  --header-bg: rgba(15,23,42,0.03);
+  --shadow-lg: 0 12px 40px rgba(15,23,42,0.14);
+  --shadow-md: 0 6px 18px rgba(15,23,42,0.1);
+  --shadow-sm: 0 2px 8px rgba(15,23,42,0.06);
 }
 
-/* Global base */
+/* ==============================
+   🌙 Dark Mode (Manual Toggle)
+============================== */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  /* Uses default dark values from :root */
+}
+
+/* ==============================
+   🌐 Global Base
+============================== */
 html, body {
   height: 100%;
   margin: 0;
-  background-color: var(--bg); /* solid base so it's full-page */
+  background-color: var(--bg);
+  scroll-behavior: smooth;
 }
 
 body {
-  /* subtle non-repeating overlay for depth */
-  background-image: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
-  background-repeat: no-repeat;
+  background-image: linear-gradient(180deg, rgba(255,255,255,0.02), transparent 60%);
   background-attachment: fixed;
-  background-size: cover;
+  background-repeat: no-repeat;
   color: var(--text);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  line-height: 1.7;
   transition: background-color var(--transition-fast) ease, color var(--transition-fast) ease;
-  padding: 0 1rem;
+  padding: 0 clamp(0.75rem, 1.2vw, 1.5rem);
 }
 
-/* Container */
+/* ==============================
+   📦 Layout & Structure
+============================== */
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 1rem 4rem 1rem;
+  padding: 2rem clamp(0.75rem, 2vw, 1.5rem) 4rem;
 }
 
-/* Header */
+/* Sticky Header */
 .site-header {
   position: sticky;
   top: 0;
@@ -79,62 +115,79 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1.25rem 0;
+  padding: 1rem clamp(0.75rem, 2vw, 1.5rem);
   border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px) saturate(160%);
   background-color: var(--header-bg);
-  box-shadow: 0 1px 0 rgba(0,0,0,0.04) inset;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.07) inset;
+  transition: background-color var(--transition-med);
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-/* Brand */
+/* ==============================
+   🪶 Brand
+============================== */
 .brand {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   font-weight: 700;
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
   letter-spacing: -0.01em;
 }
 
 .brand .logo {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: var(--radius);
-  background: linear-gradient(135deg, var(--accent), #7c3aed44);
-  display: inline-grid;
+  background: linear-gradient(135deg, var(--accent), #7c3aed88);
+  display: grid;
   place-items: center;
-  color: rgba(255,255,255,0.95);
+  color: #fff;
   font-weight: 700;
   font-size: 1.2rem;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-med);
+}
+.brand .logo:hover {
+  transform: rotate(8deg) scale(1.05);
 }
 
-/* Search */
+/* ==============================
+   🔎 Search
+============================== */
 .search-form {
   display: flex;
-  gap: 0.5rem;
   align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 400px;
 }
 
 .search-input {
+  flex: 1;
   background: var(--glass);
   border: 1px solid var(--border);
-  padding: 0.65rem 0.85rem;
+  padding: 0.6rem 0.85rem;
   border-radius: var(--radius);
-  color: inherit;
-  width: 360px;
-  min-width: 150px;
+  color: var(--text);
   outline: none;
-  transition: box-shadow var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+  transition: all var(--transition-fast);
+  font-size: 0.95rem;
 }
-
-.search-input::placeholder { color: var(--muted); }
+.search-input::placeholder {
+  color: var(--muted);
+}
 .search-input:focus {
-  box-shadow: 0 8px 24px rgba(32,45,65,0.3);
+  box-shadow: var(--shadow-md);
   border-color: var(--accent);
   transform: scale(1.02);
 }
 
-/* Buttons */
+/* ==============================
+   🧩 Buttons
+============================== */
 .btn {
   padding: 0.55rem 0.9rem;
   border-radius: var(--radius);
@@ -143,60 +196,76 @@ body {
   font-weight: 600;
   transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
 }
-
 .btn:active { transform: translateY(1px); }
 
 .btn-primary {
   background: linear-gradient(90deg, var(--accent), #7c3aed);
-  color: #031028;
-  box-shadow: 0 6px 20px rgba(32,45,65,0.36);
+  color: #ffffff;
+  box-shadow: var(--shadow-sm);
 }
 .btn-primary:hover {
   background: linear-gradient(90deg, #7c3aed, var(--accent));
-  box-shadow: 0 8px 28px rgba(32,45,65,0.42);
-  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .btn-ghost {
   background: transparent;
   border: 1px solid var(--border);
-  color: inherit;
+  color: var(--text);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+.btn-ghost:hover {
+  background-color: var(--glass);
+  border-color: var(--accent);
 }
 
-/* Main content */
+/* ==============================
+   🧱 Content & Cards
+============================== */
 .main {
-  padding: 2.5rem 0;
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
+  padding: 2.5rem 0;
 }
 
-/* Cards */
 .card {
   background: var(--card);
   border: 1px solid var(--border);
-  padding: 1.25rem;
+  padding: 1.5rem;
   border-radius: var(--radius);
-  box-shadow: 0 12px 28px rgba(2,6,23,0.45);
-  backdrop-filter: blur(6px);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(10px);
+  transition: all var(--transition-med);
 }
-
 .card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 38px rgba(2,6,23,0.55);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
 }
 
-/* Typography */
+/* ==============================
+   📝 Typography
+============================== */
 h1, h2, h3 {
   color: var(--text);
-  margin: 0 0 0.6rem 0;
   line-height: 1.3;
+  margin-bottom: 0.6rem;
+}
+h1 {
+  font-size: clamp(1.6rem, 3vw, 2.25rem);
+}
+h2 {
+  font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+}
+h3 {
+  font-size: clamp(1.1rem, 1.8vw, 1.4rem);
 }
 
-/* Primary copy should use strong contrast (white in dark mode, dark in light mode) */
 p, li {
   color: var(--text);
-  font-size: 1rem;
+  font-size: clamp(0.95rem, 1vw, 1rem);
+  margin-top: 0.25rem;
 }
 
 a {
@@ -204,12 +273,17 @@ a {
   text-decoration: none;
   transition: color var(--transition-fast);
 }
-a:hover { text-decoration: underline; color: #7c3aed; }
+a:hover {
+  color: #7c3aed;
+  text-decoration: underline;
+}
 
+/* ==============================
+   💻 Code Blocks & Media
+============================== */
 code, pre {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
   background: var(--glass);
-  padding: 0.25rem 0.5rem;
   border-radius: 8px;
 }
 
@@ -219,30 +293,59 @@ pre {
   border-radius: 14px;
 }
 
-/* Images */
 img {
-  display: block;
   max-width: 100%;
   border-radius: var(--radius);
-  box-shadow: 0 10px 28px rgba(2,6,23,0.6);
+  box-shadow: var(--shadow-md);
   transition: transform var(--transition-fast);
 }
-img:hover { transform: scale(1.02); }
+img:hover {
+  transform: scale(1.02);
+}
 
-/* Focus */
-:focus { outline: 2px solid rgba(96,165,250,0.15); outline-offset: 2px; }
-
-/* Utilities */
+/* ==============================
+   ✨ Utilities
+============================== */
 .muted { color: var(--muted); }
 .center { text-align: center; }
 
-/* Responsive tweaks */
+:focus-visible {
+  outline: 2px solid rgba(96,165,250,0.3);
+  outline-offset: 3px;
+}
+
+/* ==============================
+   📱 Responsive Design
+============================== */
+@media (max-width: 1024px) {
+  .site-header { flex-wrap: wrap; }
+}
+
 @media (max-width: 768px) {
-  .search-input { width: 200px; }
+  .search-form {
+    max-width: 100%;
+  }
+  .search-input {
+    width: 100%;
+  }
+  .main {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 480px) {
-  .search-input { width: 140px; }
-  .brand { gap: 0.5rem; font-size: 0.95rem; }
-  .main { padding: 1.5rem 0; gap: 1.5rem; }
+  .brand {
+    gap: 0.5rem;
+    font-size: 0.9rem;
+  }
+  .brand .logo {
+    width: 36px;
+    height: 36px;
+  }
+  .btn-primary, .btn-ghost {
+    font-size: 0.9rem;
+  }
+  .site-header {
+    padding: 1rem 0.75rem;
+  }
 }
