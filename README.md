@@ -12,7 +12,7 @@ A simple image gallery built with **Next.js** that lets you search for high-qual
 ---
 
 ## Live Demo
-No public demo yet. Deploy to Vercel (recommended) or any static Next.js host and add your Unsplash API key to see it live.
+[Lumino](https://lumino-five.vercel.app/)
 
 ---
 
