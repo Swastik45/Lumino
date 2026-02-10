@@ -2,7 +2,7 @@
 
 # My App — Unsplash Image Gallery
 
-[![Code of Conduct](https://img.shields.io/badge/code%20of%20conduct-Contributor%20Covenant-ff69b4.svg)](CODE_OF_CONDUCT.md) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 
 ## About this App
 A simple image gallery built with **Next.js** that lets you search for high-quality photos via the **Unsplash** API. Search results are displayed in a responsive masonry layout with a preview modal for each image.
