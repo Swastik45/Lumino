@@ -20,6 +20,12 @@ export default function Home() {
   const [preview, setPreview] = useState<ImageData | null>(null);
   const defaultQuery = "nature";
 
+  // Handler for AI Generated images (required by AIGenerate props)
+  const handleGeneratedImage = (url: string) => {
+    console.log("AI Image Generated:", url);
+    // You could potentially add the new AI image to your 'images' state here
+  };
+
   useEffect(() => {
     const fetchImages = async () => {
       setLoading(true);
@@ -30,7 +36,7 @@ export default function Home() {
         const data: { results?: ImageData[] } = await res.json();
         setImages(data.results || []);
       } catch (e) {
-        console.error(e);
+        console.error("Fetch error:", e);
       } finally {
         setLoading(false);
       }
@@ -40,84 +46,101 @@ export default function Home() {
   }, []);
 
   return (
-    
-    <div style={{ padding: "1rem", maxWidth: "1200px", margin: "0 auto" }}>
-        <div style={{ padding: "1rem", maxWidth: "1200px", margin: "0 auto" }}>
-      {/* Tab Bar */}
-      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.5rem" }}>
+    <div style={{ padding: "1rem", maxWidth: "1200px", margin: "0 auto", fontFamily: "sans-serif" }}>
+      
+      {/* Navigation Tab Bar */}
+      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.5rem", justifyContent: "center" }}>
         <button
           className={`btn ${tab === "browse" ? "btn-primary" : "btn-ghost"}`}
           onClick={() => setTab("browse")}
+          style={{
+            padding: "0.5rem 1rem",
+            cursor: "pointer",
+            backgroundColor: tab === "browse" ? "#0070f3" : "#eee",
+            color: tab === "browse" ? "#fff" : "#000",
+            border: "none",
+            borderRadius: "5px"
+          }}
         >
           🔍 Browse Photos
         </button>
         <button
           className={`btn ${tab === "generate" ? "btn-primary" : "btn-ghost"}`}
           onClick={() => setTab("generate")}
+          style={{
+            padding: "0.5rem 1rem",
+            cursor: "pointer",
+            backgroundColor: tab === "generate" ? "#0070f3" : "#eee",
+            color: tab === "generate" ? "#fff" : "#000",
+            border: "none",
+            borderRadius: "5px"
+          }}
         >
           ✨ AI Generate
         </button>
       </div>
 
-      {tab === "browse" ? (
-        /* your existing photo grid JSX */
-        <> ... </>
+      {/* Dynamic Content Area */}
+      {tab === "generate" ? (
+        <AIGenerate 
+          keyword={defaultQuery} 
+          onImageGenerated={handleGeneratedImage} 
+        />
       ) : (
-        <AIGenerate />
-      )}
-    </div>
-      <h1 style={{ textAlign: "center" }}>Featured: {defaultQuery}</h1>
+        <>
+          <h1 style={{ textAlign: "center", marginBottom: "2rem" }}>Featured: {defaultQuery}</h1>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-          gap: "1rem",
-          marginTop: "2rem",
-        }}
-      >
-        {images.map((img) => (
-          <div key={img.id} style={{ textAlign: "center", cursor: "pointer" }}>
-            <div
-              style={{
-                width: "100%",
-                height: "200px",
-                overflow: "hidden",
-                borderRadius: "8px",
-              }}
-              onClick={() => setPreview(img)}
-            >
-              <Image
-                src={img.urls.regular}
-                alt={img.description || img.alt_description || "No description"}
-                width={300}
-                height={200}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            </div>
-            <p style={{ marginTop: "0.5rem", fontStyle: "italic" }}>
-              {img.description || img.alt_description || "No description"}
-            </p>
-            <p style={{ fontSize: "0.8rem", color: "#555" }}>
-              Photo by{" "}
-              <a
-                href={img.links.html}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: "#0070f3" }}
-              >
-                {img.user?.name || "Unknown"}
-              </a>{" "}
-              on Unsplash
-            </p>
+          {loading && <p style={{ textAlign: "center" }}>Loading high-quality images...</p>}
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gap: "1.5rem",
+            }}
+          >
+            {images.map((img) => (
+              <div key={img.id} style={{ textAlign: "center" }}>
+                <div
+                  style={{
+                    width: "100%",
+                    height: "250px",
+                    overflow: "hidden",
+                    borderRadius: "12px",
+                    cursor: "pointer",
+                    boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+                  }}
+                  onClick={() => setPreview(img)}
+                >
+                  <Image
+                    src={img.urls.regular}
+                    alt={img.description || img.alt_description || "Unsplash Image"}
+                    width={400}
+                    height={300}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                </div>
+                <p style={{ marginTop: "0.75rem", fontSize: "0.9rem", fontWeight: "500" }}>
+                  {img.description || img.alt_description || "Untitled"}
+                </p>
+                <p style={{ fontSize: "0.8rem", color: "#666" }}>
+                  By{" "}
+                  <a
+                    href={img.links.html}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "#0070f3", textDecoration: "none" }}
+                  >
+                    {img.user?.name}
+                  </a>
+                </p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-    
+        </>
+      )}
 
-      {loading && <p style={{ textAlign: "center", marginTop: "1rem" }}>Loading...</p>}
-
-      {/* Modal Preview */}
+      {/* Fullscreen Modal Preview */}
       {preview && (
         <div
           onClick={() => setPreview(null)}
@@ -125,43 +148,40 @@ export default function Home() {
             position: "fixed",
             top: 0,
             left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.8)",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.9)",
             display: "flex",
+            flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
-            zIndex: 1000,
-            padding: "1rem",
-            cursor: "pointer",
+            zIndex: 9999,
+            padding: "2rem",
+            cursor: "zoom-out",
           }}
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: "90%", maxHeight: "90%", textAlign: "center" }}
+            style={{ maxWidth: "1000px", width: "100%", cursor: "default" }}
           >
             <Image
-              src={preview.urls.full || preview.urls.regular}
-              alt={preview.description || preview.alt_description || "No description"}
-              width={800}
-              height={600}
-              style={{ width: "100%", height: "auto", borderRadius: "8px" }}
+              src={preview.urls.full}
+              alt="Full resolution"
+              width={1200}
+              height={800}
+              style={{ 
+                width: "100%", 
+                height: "auto", 
+                maxHeight: "80vh", 
+                objectFit: "contain", 
+                borderRadius: "4px" 
+              }}
+              unoptimized
             />
-            <p style={{ marginTop: "0.5rem", fontStyle: "italic", color: "#fff" }}>
-              {preview.description || preview.alt_description || "No description"}
-            </p>
-            <p style={{ fontSize: "0.9rem", color: "#ddd" }}>
-              Photo by{" "}
-              <a
-                href={preview.links.html}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: "#ffd700" }}
-              >
-                {preview.user?.name || "Unknown"}
-              </a>{" "}
-              on Unsplash
-            </p>
+            <div style={{ color: "#fff", marginTop: "1rem", textAlign: "center" }}>
+              <p style={{ fontSize: "1.2rem" }}>{preview.description || "Photo Details"}</p>
+              <p>Credits: {preview.user.name} via Unsplash</p>
+            </div>
           </div>
         </div>
       )}
