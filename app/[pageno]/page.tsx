@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, use } from "react";
 import Image from "next/image";
-import { use } from "react";
+import AiGenerate from "../components/AIGenerate";
 
 interface ImageData {
   id: string;
@@ -11,6 +11,7 @@ interface ImageData {
   alt_description: string | null;
   user: { name: string };
   links: { html: string };
+  isAi?: boolean; 
 }
 
 export default function Page({ params }: { params: Promise<{ pageno: string }> }) {
@@ -21,162 +22,151 @@ export default function Page({ params }: { params: Promise<{ pageno: string }> }
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  // Modal state
   const [preview, setPreview] = useState<ImageData | null>(null);
 
-  const fetchImages = async (currentPage: number) => {
+  // Fetch Unsplash Data
+  const fetchImages = useCallback(async (currentPage: number) => {
     setLoading(true);
     setError("");
     try {
       const res = await fetch(
-        `/api/unsplash-search?query=${encodeURIComponent(
-          keyword
-        )}&page=${currentPage}&per_page=12`
+        `/api/unsplash-search?query=${encodeURIComponent(keyword)}&page=${currentPage}&per_page=12`
       );
       const data = await res.json();
 
       if (data.results && data.results.length > 0) {
-        setImages((prev) => [...prev, ...data.results]);
+        setImages((prev) => (currentPage === 1 ? data.results : [...prev, ...data.results]));
       } else if (currentPage === 1) {
-        setError(`No images found for "${keyword}"`);
+        setImages([]);
+        setError(`No Unsplash results found for "${keyword}"`);
       }
     } catch {
-      setError("Failed to fetch images");
+      setError("Failed to fetch images. Please check your connection.");
     } finally {
       setLoading(false);
     }
-  };
+  }, [keyword]);
 
   useEffect(() => {
     setImages([]);
     setPage(1);
     fetchImages(1);
-  }, [keyword]);
+  }, [fetchImages]);
 
-  const handleLoadMore = () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    fetchImages(nextPage);
+  // Handle receiving the AI URL from child component
+  const handleAiGenerated = (url: string) => {
+    const aiImage: ImageData = {
+      id: `ai-${Date.now()}`,
+      urls: { regular: url, full: url },
+      description: `AI Visualization: ${keyword}`,
+      alt_description: keyword,
+      user: { name: "Pollinations AI" },
+      links: { html: url },
+      isAi: true,
+    };
+    // Prepend the new AI image to the grid
+    setImages((prev) => [aiImage, ...prev]);
   };
 
   return (
-    <div style={{ padding: "1rem", maxWidth: "1200px", margin: "0 auto" }}>
-      <h1 style={{ textAlign: "center" }}>Results for: {keyword}</h1>
-      {error && <p style={{ textAlign: "center", color: "red" }}>{error}</p>}
+    <div style={{ padding: "1rem", maxWidth: "1200px", margin: "0 auto", minHeight: "100vh" }}>
+      <h1 style={{ textAlign: "center", marginBottom: "1.5rem", fontSize: "2rem" }}>
+        Results for: <em style={{ color: "#4f46e5" }}>{keyword}</em>
+      </h1>
 
-      {/* Grid of images */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-          gap: "1rem",
-          marginTop: "2rem",
-        }}
-      >
+      {/* Pass both keyword and the callback function */}
+      <AiGenerate keyword={keyword} onImageGenerated={handleAiGenerated} />
+
+      {error && <p style={{ textAlign: "center", color: "#ff6b6b" }}>{error}</p>}
+
+      {/* Integrated Image Grid */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+        gap: "1.5rem",
+      }}>
         {images.map((img) => (
-          <div key={img.id} style={{ textAlign: "center", cursor: "pointer" }}>
-            <div
-              style={{
-                width: "100%",
-                height: "200px",
-                overflow: "hidden",
-                borderRadius: "8px",
-              }}
-              onClick={() => setPreview(img)}
-            >
-              <Image
-                src={img.urls.regular}
-                alt={img.description || img.alt_description || "No description"}
-                width={300}
-                height={200}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
+          <div key={img.id} onClick={() => setPreview(img)} style={{ cursor: "pointer" }}>
+            <div style={{ 
+              width: "100%", 
+              height: "220px", 
+              overflow: "hidden", 
+              borderRadius: "12px",
+              position: "relative",
+              border: img.isAi ? "3px solid #4f46e5" : "1px solid #eee" 
+            }}>
+              {img.isAi ? (
+                /* NATIVE IMG bypasses Next.js optimization that blocks anonymous AI requests */
+                <img
+                  src={img.urls.regular}
+                  alt={img.description || "AI"}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <Image
+                  src={img.urls.regular}
+                  alt={img.description || "Unsplash"}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 300px"
+                  style={{ objectFit: "cover" }}
+                />
+              )}
+              {img.isAi && (
+                <span style={{ 
+                  position: "absolute", top: 12, left: 12, background: "#4f46e5", 
+                  color: "white", padding: "4px 10px", borderRadius: "6px", 
+                  fontSize: "0.7rem", fontWeight: "bold" 
+                }}>
+                  AI GENERATED
+                </span>
+              )}
             </div>
-            <p style={{ marginTop: "0.5rem", fontStyle: "italic" }}>
-              {img.description || img.alt_description || "No description"}
-            </p>
-            <p style={{ fontSize: "0.8rem", color: "#555" }}>
-              Photo by{" "}
-              <a
-                href={img.links.html}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: "#0070f3" }}
-              >
-                {img.user?.name || "Unknown"}
-              </a>{" "}
-              on Unsplash
+            <p style={{ fontSize: "0.85rem", marginTop: "0.8rem", fontWeight: 500 }}>
+              {img.isAi ? "✨ Dynamic AI Content" : `📸 ${img.user.name}`}
             </p>
           </div>
         ))}
       </div>
 
-      {loading && <p style={{ textAlign: "center", marginTop: "1rem" }}>Loading...</p>}
-
+      {loading && <p style={{ textAlign: "center", marginTop: "2rem" }}>Updating results...</p>}
+      
       {!loading && images.length > 0 && (
-        <div style={{ textAlign: "center", marginTop: "2rem" }}>
-          <button
-            onClick={handleLoadMore}
-            style={{
-              padding: "0.5rem 1rem",
-              cursor: "pointer",
-              backgroundColor: "#0070f3",
-              color: "white",
-              border: "none",
-              borderRadius: "5px",
-            }}
+        <div style={{ textAlign: "center", marginTop: "3rem", paddingBottom: "2rem" }}>
+          <button 
+            onClick={() => { setPage(p => p + 1); fetchImages(page + 1); }} 
+            style={{ padding: "10px 20px", borderRadius: "8px", border: "1px solid #ccc", background: "white", cursor: "pointer" }}
           >
-            Load More
+            Load More from Unsplash
           </button>
         </div>
       )}
 
-      {/* Modal Preview */}
+      {/* Full-Screen Preview Modal */}
       {preview && (
-        <div
-          onClick={() => setPreview(null)}
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.8)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 1000,
-            padding: "1rem",
-            cursor: "pointer",
+        <div 
+          onClick={() => setPreview(null)} 
+          style={{ 
+            position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.9)", 
+            display: "flex", justifyContent: "center", alignItems: "center", 
+            zIndex: 1000, padding: "2rem" 
           }}
         >
-          <div
-            onClick={(e) => e.stopPropagation()} // prevent modal close when clicking content
-            style={{ maxWidth: "90%", maxHeight: "90%", textAlign: "center" }}
-          >
-            <Image
-              src={preview.urls.full || preview.urls.regular}
-              alt={preview.description || preview.alt_description || "No description"}
-              width={800}
-              height={600}
-              style={{ width: "100%", height: "auto", borderRadius: "8px" }}
+          <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: "1000px", width: "100%", textAlign: "center" }}>
+            <img
+              src={preview.urls.full}
+              alt="Full Preview"
+              style={{ maxWidth: "100%", maxHeight: "80vh", borderRadius: "8px", objectFit: "contain" }}
             />
-            <p style={{ marginTop: "0.5rem", fontStyle: "italic", color: "#fff" }}>
-              {preview.description || preview.alt_description || "No description"}
-            </p>
-            <p style={{ fontSize: "0.9rem", color: "#ddd" }}>
-              Photo by{" "}
-              <a
-                href={preview.links.html}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: "#ffd700" }}
+            <div style={{ marginTop: "1.5rem", color: "white" }}>
+              <p style={{ fontSize: "1.1rem" }}>{preview.description || "Visual preview"}</p>
+              <button 
+                onClick={() => setPreview(null)} 
+                style={{ marginTop: "20px", padding: "8px 25px", borderRadius: "20px", border: "none", background: "#fff", cursor: "pointer", fontWeight: "bold" }}
               >
-                {preview.user?.name || "Unknown"}
-              </a>{" "}
-              on Unsplash
-            </p>
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -1,10 +1,9 @@
 @import "tailwindcss";
 
 /* ==============================
-   🌙 Design Tokens (Dark First)
+   Design Tokens — Dark (default)
 ============================== */
 :root {
-  /* Layout & Color System */
   --bg: #06070a;
   --surface: #07090f;
   --card: #0b0f14;
@@ -12,72 +11,45 @@
   --text: #ffffff;
   --accent: #60a5fa;
 
-  /* Effects & Depth */
-  --border: rgba(255,255,255,0.06);
-  --glass: rgba(255,255,255,0.04);
-  --header-bg: rgba(255,255,255,0.02);
+  --border: rgba(255, 255, 255, 0.06);
+  --glass: rgba(255, 255, 255, 0.04);
+  --header-bg: rgba(255, 255, 255, 0.02);
   --radius: 12px;
   --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.45);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
   --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.25);
 
-  /* Animation & Motion */
   --transition-fast: 180ms;
   --transition-med: 280ms;
-  --transition-slow: 400ms;
+
+  color-scheme: dark;
 }
 
 /* ==============================
-   ☀️ Light Mode (System Preference)
-============================== */
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    --bg: #ffffff;
-    --surface: #f9fafb;
-    --card: #ffffff;
-    --muted: #6b7280;
-    --text: #0f172a;
-    --accent: #2563eb;
-    --border: rgba(15,23,42,0.08);
-    --glass: rgba(15,23,42,0.02);
-    --header-bg: rgba(15,23,42,0.03);
-    --shadow-lg: 0 12px 40px rgba(15,23,42,0.14);
-    --shadow-md: 0 6px 18px rgba(15,23,42,0.1);
-    --shadow-sm: 0 2px 8px rgba(15,23,42,0.06);
-  }
-}
-
-/* ==============================
-   ☀️ Light Mode (Manual Toggle)
+   Light Mode
 ============================== */
 :root[data-theme="light"] {
-  color-scheme: light;
   --bg: #ffffff;
   --surface: #f9fafb;
   --card: #ffffff;
   --muted: #6b7280;
   --text: #0f172a;
   --accent: #2563eb;
-  --border: rgba(15,23,42,0.08);
-  --glass: rgba(15,23,42,0.02);
-  --header-bg: rgba(15,23,42,0.03);
-  --shadow-lg: 0 12px 40px rgba(15,23,42,0.14);
-  --shadow-md: 0 6px 18px rgba(15,23,42,0.1);
-  --shadow-sm: 0 2px 8px rgba(15,23,42,0.06);
+  --border: rgba(15, 23, 42, 0.08);
+  --glass: rgba(15, 23, 42, 0.02);
+  --header-bg: rgba(15, 23, 42, 0.03);
+  --shadow-lg: 0 12px 40px rgba(15, 23, 42, 0.14);
+  --shadow-md: 0 6px 18px rgba(15, 23, 42, 0.1);
+  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
+
+  color-scheme: light;
 }
 
 /* ==============================
-   🌙 Dark Mode (Manual Toggle)
+   Global Base
 ============================== */
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  /* Uses default dark values from :root */
-}
-
-/* ==============================
-   🌐 Global Base
-============================== */
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   background-color: var(--bg);
@@ -85,20 +57,19 @@ html, body {
 }
 
 body {
-  background-image: linear-gradient(180deg, rgba(255,255,255,0.02), transparent 60%);
-  background-attachment: fixed;
-  background-repeat: no-repeat;
   color: var(--text);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color var(--transition-fast) ease, color var(--transition-fast) ease;
   padding: 0 clamp(0.75rem, 1.2vw, 1.5rem);
+  transition: background-color var(--transition-fast) ease,
+    color var(--transition-fast) ease;
 }
 
 /* ==============================
-   📦 Layout & Structure
+   Layout
 ============================== */
 .container {
   max-width: 1200px;
@@ -106,7 +77,9 @@ body {
   padding: 2rem clamp(0.75rem, 2vw, 1.5rem) 4rem;
 }
 
-/* Sticky Header */
+/* ==============================
+   Header
+============================== */
 .site-header {
   position: sticky;
   top: 0;
@@ -118,15 +91,13 @@ body {
   padding: 1rem clamp(0.75rem, 2vw, 1.5rem);
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
   background-color: var(--header-bg);
-  box-shadow: 0 1px 0 rgba(0,0,0,0.07) inset;
   transition: background-color var(--transition-med);
- 
-  
 }
 
 /* ==============================
-   🪶 Brand
+   Brand
 ============================== */
 .brand {
   display: flex;
@@ -150,12 +121,13 @@ body {
   box-shadow: var(--shadow-md);
   transition: transform var(--transition-med);
 }
+
 .brand .logo:hover {
   transform: rotate(8deg) scale(1.05);
 }
 
 /* ==============================
-   🔎 Search
+   Search
 ============================== */
 .search-form {
   display: flex;
@@ -173,20 +145,21 @@ body {
   border-radius: var(--radius);
   color: var(--text);
   outline: none;
-  transition: all var(--transition-fast);
   font-size: 0.95rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
+
 .search-input::placeholder {
   color: var(--muted);
 }
+
 .search-input:focus {
-  box-shadow: var(--shadow-md);
   border-color: var(--accent);
-  transform: scale(1.02);
+  box-shadow: var(--shadow-md);
 }
 
 /* ==============================
-   🧩 Buttons
+   Buttons
 ============================== */
 .btn {
   padding: 0.55rem 0.9rem;
@@ -194,15 +167,21 @@ body {
   border: none;
   cursor: pointer;
   font-weight: 600;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+  transition: transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
 }
-.btn:active { transform: translateY(1px); }
+
+.btn:active {
+  transform: translateY(1px);
+}
 
 .btn-primary {
   background: linear-gradient(90deg, var(--accent), #7c3aed);
   color: #ffffff;
   box-shadow: var(--shadow-sm);
 }
+
 .btn-primary:hover {
   background: linear-gradient(90deg, #7c3aed, var(--accent));
   box-shadow: var(--shadow-md);
@@ -213,15 +192,17 @@ body {
   background: transparent;
   border: 1px solid var(--border);
   color: var(--text);
-  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+  transition: background-color var(--transition-fast),
+    border-color var(--transition-fast);
 }
+
 .btn-ghost:hover {
   background-color: var(--glass);
   border-color: var(--accent);
 }
 
 /* ==============================
-   🧱 Content & Cards
+   Cards
 ============================== */
 .main {
   display: grid;
@@ -236,34 +217,38 @@ body {
   padding: 1.5rem;
   border-radius: var(--radius);
   box-shadow: var(--shadow-md);
-  backdrop-filter: blur(10px);
-  transition: all var(--transition-med);
+  transition: transform var(--transition-med), box-shadow var(--transition-med);
 }
+
 .card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
 }
 
 /* ==============================
-   📝 Typography
+   Typography
 ============================== */
-h1, h2, h3 {
-  color: var(--text);
+h1,
+h2,
+h3 {
   line-height: 1.3;
   margin-bottom: 0.6rem;
 }
+
 h1 {
   font-size: clamp(1.6rem, 3vw, 2.25rem);
 }
+
 h2 {
   font-size: clamp(1.25rem, 2.2vw, 1.75rem);
 }
+
 h3 {
   font-size: clamp(1.1rem, 1.8vw, 1.4rem);
 }
 
-p, li {
-  color: var(--text);
+p,
+li {
   font-size: clamp(0.95rem, 1vw, 1rem);
   margin-top: 0.25rem;
 }
@@ -273,16 +258,19 @@ a {
   text-decoration: none;
   transition: color var(--transition-fast);
 }
+
 a:hover {
   color: #7c3aed;
   text-decoration: underline;
 }
 
 /* ==============================
-   💻 Code Blocks & Media
+   Code
 ============================== */
-code, pre {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+code,
+pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono",
+    "Courier New", monospace;
   background: var(--glass);
   border-radius: 8px;
 }
@@ -293,41 +281,50 @@ pre {
   border-radius: 14px;
 }
 
+/* ==============================
+   Images
+============================== */
 img {
   max-width: 100%;
   border-radius: var(--radius);
   box-shadow: var(--shadow-md);
   transition: transform var(--transition-fast);
 }
+
 img:hover {
   transform: scale(1.02);
 }
 
 /* ==============================
-   ✨ Utilities
+   Utilities
 ============================== */
-.muted { color: var(--muted); }
-.center { text-align: center; }
+.muted {
+  color: var(--muted);
+}
+
+.center {
+  text-align: center;
+}
 
 :focus-visible {
-  outline: 2px solid rgba(96,165,250,0.3);
+  outline: 2px solid rgba(96, 165, 250, 0.3);
   outline-offset: 3px;
 }
 
 /* ==============================
-   📱 Responsive Design
+   Responsive
 ============================== */
 @media (max-width: 1024px) {
-  .site-header { flex-wrap: wrap; }
+  .site-header {
+    flex-wrap: wrap;
+  }
 }
 
 @media (max-width: 768px) {
   .search-form {
     max-width: 100%;
   }
-  .search-input {
-    width: 100%;
-  }
+
   .main {
     grid-template-columns: 1fr;
   }
@@ -338,13 +335,12 @@ img:hover {
     gap: 0.5rem;
     font-size: 0.9rem;
   }
+
   .brand .logo {
     width: 36px;
     height: 36px;
   }
-  .btn-primary, .btn-ghost {
-    font-size: 0.9rem;
-  }
+
   .site-header {
     padding: 1rem 0.75rem;
   }

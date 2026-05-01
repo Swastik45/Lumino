@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import AIGenerate from "./components/AIGenerate";
 
 interface ImageData {
   id: string;
@@ -13,6 +14,7 @@ interface ImageData {
 }
 
 export default function Home() {
+  const [tab, setTab] = useState<"browse" | "generate">("browse");
   const [images, setImages] = useState<ImageData[]>([]);
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState<ImageData | null>(null);
@@ -38,7 +40,32 @@ export default function Home() {
   }, []);
 
   return (
+    
     <div style={{ padding: "1rem", maxWidth: "1200px", margin: "0 auto" }}>
+        <div style={{ padding: "1rem", maxWidth: "1200px", margin: "0 auto" }}>
+      {/* Tab Bar */}
+      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.5rem" }}>
+        <button
+          className={`btn ${tab === "browse" ? "btn-primary" : "btn-ghost"}`}
+          onClick={() => setTab("browse")}
+        >
+          🔍 Browse Photos
+        </button>
+        <button
+          className={`btn ${tab === "generate" ? "btn-primary" : "btn-ghost"}`}
+          onClick={() => setTab("generate")}
+        >
+          ✨ AI Generate
+        </button>
+      </div>
+
+      {tab === "browse" ? (
+        /* your existing photo grid JSX */
+        <> ... </>
+      ) : (
+        <AIGenerate />
+      )}
+    </div>
       <h1 style={{ textAlign: "center" }}>Featured: {defaultQuery}</h1>
 
       <div
@@ -86,6 +113,7 @@ export default function Home() {
           </div>
         ))}
       </div>
+    
 
       {loading && <p style={{ textAlign: "center", marginTop: "1rem" }}>Loading...</p>}
 
