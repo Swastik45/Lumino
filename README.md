@@ -1,131 +1,179 @@
+# Lumino — AI-Powered Image Discovery
 
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
 
-# My App — Unsplash Image Gallery
-
-[![Code of Conduct](https://img.shields.io/badge/code%20of%20conduct-Contributor%20Covenant-ff69b4.svg)](CODE_OF_CONDUCT.md) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-
-## About this App
-A simple image gallery built with **Next.js** that lets you search for high-quality photos via the **Unsplash** API. Search results are displayed in a responsive masonry layout with a preview modal for each image.
-
-> 🔧 Built to demonstrate client-side search, serverless API routes, and a responsive image gallery.
+**Lumino** is an AI-powered image discovery platform that combines curated stock photography from Unsplash with AI-generated imagery. Search millions of photos or create unique visuals from text prompts — all in one beautiful interface.
 
 ---
 
-## Live Demo
-[Lumino](https://lumino-five.vercel.app/)
+## ✨ Live Demo
+
+[lumino-five.vercel.app](https://lumino-five.vercel.app/)
 
 ---
 
-## Folder Structure
+## Features
+
+### 🔍 Browse Mode
+- **Search Unsplash** — Search millions of curated, high-quality photos
+- **Quick Filters** — One-click search suggestions (architecture, portrait, ocean, abstract, forest, city lights, macro, travel)
+- **Responsive Masonry Grid** — Beautiful layout with featured images spanning columns
+- **Lightbox Preview** — Click any image for full-size viewing with photographer credits
+
+### 🤖 AI Studio
+- **Text-to-Image Generation** — Create unique images from descriptive prompts
+- **Style Presets** — Photorealistic, Cinematic, Oil Painting, Pencil Sketch, Watercolor, Neon Noir
+- **Quick Ideas** — Pre-built creative prompts to get you started
+- **Variation Control** — Adjust output diversity (1-5 variations)
+- **Loading Animations** — Polished generation state UI with shimmer effects
+
+### 🌓 Theme System
+- **Dark/Light Mode** — Toggle between dark and light themes
+- **System Preference** — Auto-detects OS color scheme on first visit
+- **Persistent** — Saves preference to localStorage
+
+### 📱 Responsive Design
+- **Desktop** — Full masonry grid with sidebar potential
+- **Tablet** — Adapted 2-column layouts
+- **Mobile** — Single column with touch-friendly controls and overlay search
+
+---
+
+## Tech Stack
+
+| Category | Technology |
+|----------|-------------|
+| Framework | Next.js 15 (App Router) |
+| UI | React 19 |
+| Styling | Tailwind CSS + CSS-in-JS (inline styles) |
+| Stock Photos | Unsplash API |
+| AI Generation | Pollinations.ai API |
+| Deployment | Vercel |
+
+---
+
+## Project Structure
+
 ```
-my-app/
-  app/
-    globals.css
-    layout.tsx
-    page.tsx
-    [pageno]/
-      page.tsx
-    api/
-      unsplash/
-        route.ts        # GET /api/unsplash?query=... -> random photo for a query
-      unsplash-search/
-        route.ts        # GET /api/unsplash-search?query=...&page=...&per_page=...
-    components/
-      Header.tsx
-  public/
-  next.config.ts
-  package.json
-  tsconfig.json
-  README.md
+lumino/
+├── app/
+│   ├── page.tsx                    # Main home page (Browse + AI Studio tabs)
+│   ├── layout.tsx                  # Root layout
+│   ├── globals.css                # Global styles
+│   ├── [pageno]/page.tsx           # Dynamic route (/nature, /ocean, etc.)
+│   ├── api/
+│   │   ├── unsplash-search/       # Unsplash search proxy
+│   │   │   └── route.ts
+│   │   └── ai-proxy/               # Pollinations.ai image generation
+│   │       └── route.ts
+│   └── components/
+│       ├── Header.tsx             # Sticky header with search + theme toggle
+│       └── AIGenerate.tsx           # AI image generation component
+├── public/
+├── next.config.ts
+├── package.json
+└── README.md
 ```
 
 ---
 
-## Features ✅
-- Search Unsplash for photos
-- Responsive masonry layout (uses `react-masonry-css`)
-- Preview modal with photo details (description, photographer)
-- Serverless API routes that proxy requests to Unsplash (keeps API key server-side)
+## Getting Started
 
----
+### Prerequisites
 
-## Tools & Tech Stack 🔧
-- **Next.js** (app router)
-- **React**
-- **Tailwind CSS** (see `postcss.config.mjs`)
-- **Unsplash API** (photo search and random photo endpoints)
-- **react-masonry-css** for layout
+- Node.js 18+
+- npm (or pnpm / yarn)
 
----
+### Environment Variables
 
-## Requirements
-- Node.js 18 or newer
-- npm (or yarn / pnpm)
-- An **Unsplash Developer** account and an access key
-  - Create an app and get a key at: `https://unsplash.com/developers`
+Create a `.env.local` file in the root directory:
 
----
+```env
+UNSPLASH_ACCESS_KEY=your_unsplash_access_key
+```
 
-## Installation & Local Development
-1. Clone the repo:
+Get your free Unsplash API key at [unsplash.com/developers](https://unsplash.com/developers)
+
+### Installation
 
 ```bash
-git clone <repo-url>
-cd my-app
-```
+# Clone the repository
+git clone <your-repo-url>
+cd lumino
 
-2. Install dependencies:
-
-```bash
+# Install dependencies
 npm install
-# or: pnpm install | yarn
-```
+# or: pnpm install | yarn install
 
-3. Create a `.env.local` in the project root with your Unsplash key:
-
-```
-UNSPLASH_ACCESS_KEY=your_unsplash_access_key_here
-```
-
-4. Run the dev server:
-
-```bash
+# Start development server
 npm run dev
-# open http://localhost:3000
 ```
+
+Open [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## API Routes (internal)
-- `GET /api/unsplash?query=YOUR_QUERY` — returns a random photo for the query (url, description, photographer)
-- `GET /api/unsplash-search?query=YOUR_QUERY&page=1&per_page=8` — returns Unsplash search results (matches Unsplash response schema)
+## API Routes
 
-Example using `curl`:
-```bash
-curl "http://localhost:3000/api/unsplash-search?query=mountains&page=1&per_page=8"
+### Unsplash Search
+
 ```
+GET /api/unsplash-search?query=mountains&page=1&per_page=12
+```
+
+Returns Unsplash search results with full image metadata.
+
+### AI Image Generation
+
+```
+GET /api/ai-proxy?prompt=a%20cyberpunk%20city&seed=12345
+```
+
+Generates an image from text using Pollinations.ai. Returns a JPEG blob.
 
 ---
 
 ## Scripts
-- `npm run dev` — start development server
-- `npm run build` — build for production
-- `npm run start` — start built app
-- `npm run lint` — run ESLint
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
 
 ---
 
 ## Deployment
-Recommended: **Vercel**. When you deploy, add the `UNSPLASH_ACCESS_KEY` environment variable to your project's settings on the host.
+
+### Vercel (Recommended)
+
+1. Push your code to GitHub
+2. Import the project at [vercel.com](https://vercel.com)
+3. Add `UNSPLASH_ACCESS_KEY` to Environment Variables
+4. Deploy
+
+Every deployment gets automatic:
+- Edge runtime optimization
+- Global CDN
+- SSL certificates
 
 ---
 
 ## Contributing
-Feel free to open issues or PRs. Replace `Your Name` in the author/credits as needed.
+
+Contributions are welcome! Please feel free to open issues or submit pull requests.
+
+1. Fork the repo
+2. Create your feature branch (`git checkout -b feature/amazing`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing`)
+5. Open a Pull Request
 
 ---
 
 ## License
-MIT — see `LICENSE` (add one if you need a license file).
 
-
+MIT — see [LICENSE](LICENSE) for details.
